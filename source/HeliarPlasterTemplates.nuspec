@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>HeliarPlasterTemplates</id>
+	<title>Heliar Plaster Templates</title>
+    <version>{version-replace-me}</version>
+    <authors>Robb Vandaveer</authors>
+    <owners>Robb Vandaveer</owners>
+    <projectUrl>https://github.com/rlvandaveer/HeliarPlasterTemplates</projectUrl>
+	<licenseUrl>https://raw.githubusercontent.com/rlvandaveer/HeliarPlasterTemplates/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This package contains Plaster templates for quickly creating PowerShell projects and items</description>
+    <releaseNotes>Initial release</releaseNotes>
+    <copyright>Copyright 2019 Robb Vandaveer</copyright>
+	<language>en-us</language>
+    <tags>powershell plaster codegenerator templates scaffold</tags>
+    <dependencies></dependencies>
+  </metadata>
+</package>

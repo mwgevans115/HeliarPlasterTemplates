@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<plasterManifest schemaVersion="1.1" templateType="Project"
+	xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
+	<metadata>
+		<name>NewHeliarPowerShellModuleProject</name>
+		<id>c6774698-7e41-4205-83c0-ce7df52da9a8</id>
+		<version>0.0.1</version>
+		<title>New Heliar PowerShell Module Project</title>
+		<description>Creates the structure for a new PowerShell module project</description>
+		<author>R. L. Vandaveer</author>
+		<tags>PowerShell, module, project</tags>
+	</metadata>
+	<parameters>
+		<parameter name="Name" type="text" prompt="Provide a name for your module"/>
+		<parameter name="Description" type="text" prompt="Provide a description for your module"/>
+		<parameter name="Version" type="text" prompt="Provide a version for your module" default="0.0.1"/>
+		<parameter name="Author" type="user-fullname" prompt="Provide the name of the author for your module"/>
+		<parameter name="AuthorEmail" type="user-email" prompt="Provide the e-mail address of the author for your module"/>
+		<parameter name="FunctionFolders" type="multichoice" prompt="Please select folders to include" default="0,1">
+			<choice label="&amp;Public" help="Adds a public folder to module root" value="Public" />
+			<choice label="P&amp;rivate" help="Adds a private folder to module root" value="Private" />
+			<choice label="&amp;Classes" help="Adds a classes folder to module root" value="Classes" />
+			<choice label="&amp;Binaries" help="Adds a binaries folder to module root" value="Binaries" />
+			<choice label="&amp;Data" help="Adds a data folder to module root" value="Data" />
+		</parameter>
+		<parameter name="Editor" type="choice" prompt="Select an editor for editor integration (or None):" default="1" store="text">
+			<choice label="&amp;None" help="No editor specified" value="None"/>
+			<choice label="Visual Studio &amp;Code" help="Your editor is Visual Studio Code" value="VSCode"/>
+		</parameter>
+		<parameter name="CreateRepo" type="choice" prompt="Select whether to initialize a Git repo for your project:" default="1" store="text">
+			<choice label="&amp;No" help="No Git repository will be created" value="$false" />
+			<choice label="&amp;Yes" help="A Git repository will be created" value="$true" />
+		</parameter>
+		<parameter name="GitVersion" type="choice" prompt="Select whether to utilize GitVersion (or None):" default="1" store="text">
+			<choice label="&amp;No" help="No GitVersion integration" value="$false"/>
+			<choice label="&amp;Yes" help="GitVersion will be included" value="$true"/>
+		</parameter>
+		<parameter name="NugetSupport" type="choice" prompt="Select whether to add Nuget support to your project" default="1" store="text">
+			<choice label="&amp;No" help="No Nuget support" value="$false"/>
+			<choice label="&amp;Yes" help="Nuget support will be included" value="$true"/>
+		</parameter>
+		<parameter name="BuildAutomation" type="choice" prompt="Select a build automation tool (or None):" default="1" store="text">
+			<choice label="&amp;None" help="No build automation tool specified" value="None"/>
+			<choice label="&amp;psake" help="Your build automation tool is psake" value="psake"/>
+		</parameter>
+		<parameter name="DependencyFramework" type="choice" prompt="Select a dependency framework (or None):" default="1" store="text">
+			<choice label="&amp;None" help="No dependency framework specified" value="None"/>
+			<choice label="&amp;PSDepend" help="Your dependency framework is PSDepend" value="PSDepend"/>
+		</parameter>
+		<parameter name="TestFramework" type="choice" prompt="Select a test framework (or None):" default="1" store="text">
+			<choice label="&amp;None" help="No build test framework specified" value="None"/>
+			<choice label="&amp;Pester" help="Your test framework is Pester" value="Pester"/>
+		</parameter>
+	</parameters>
+	<content>
+        <message>&#10;&#10;Scaffolding your PowerShell Module Project...&#10;&#10;&#10;</message>
+
+		<message>Creating folders...</message>
+		<file destination="build/" source="" />
+		<file destination="cicd/" source="" />
+		<file destination="docs/" source="" />
+		<file destination="source/" source="" />
+		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Public'" destination="source/Public/" source="" />
+		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Private'" destination="source/Private/" source="" />
+		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Classes'" destination="source/Classes/" source="" />
+		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Binaries'" destination="source/Binaries/" source="" />
+		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Data'" destination="source/Data/" source="" />
+		<file condition="$PLASTER_PARAM_TestFramework -ne 'None'" destination="tests/" source=""/>
+
+		<message condition="$PLASTER_PARAM_BuildAutomation -eq 'None'">Creating default module manifest...</message>
+		<newModuleManifest condition="$PLASTER_PARAM_BuildAutomation -eq 'None'"
+						   destination='${PLASTER_PARAM_Name}.psd1'
+						   moduleVersion='$PLASTER_PARAM_Version'
+						   rootModule='${PLASTER_PARAM_Name}.psm1'
+						   encoding='UTF8-NoBOM'
+						   openInEditor="true"/>
+
+		<message condition="$PLASTER_PARAM_BuildAutomation -ne 'None'">Creating module definition data file...</message>
+		<templateFile condition="$PLASTER_PARAM_BuildAutomation -ne 'None'"
+					  source="Module.definition.psd1"
+					  destination="source\${PLASTER_PARAM_Name}.definition.psd1" />
+
+		<message>Creating default root module file...</message>
+        <file source='Module.psm1'
+              destination='source\${PLASTER_PARAM_Name}.psm1'
+              openInEditor="true"/>
+
+        <message condition="$PLASTER_PARAM_Editor -eq 'VSCode'">Creating VSCode configuration...</message>
+        <file condition="$PLASTER_PARAM_Editor -eq 'VSCode'"
+              source='editor\VSCode\settings.json'
+              destination='.vscode\settings.json' />
+
+        <file condition="$PLASTER_PARAM_Editor -eq 'VSCode'"
+              source='editor\VSCode\tasks.json'
+              destination='.vscode\tasks.json' />
+
+		<message condition="$PLASTER_PARAM_GitVersion -eq $true">Creating GitVersion based versioning script...</message>
+		<file condition="$PLASTER_PARAM_GitVersion -eq $true"
+			  source="build\version-functions.ps1"
+			  destination="build\version-functions.ps1" />
+		<file condition="$PLASTER_PARAM_GitVersion -eq $true"
+			  source="GitVersion.yml"
+			  destination="GitVersion.yml" />
+
+		<message condition="$PLASTER_PARAM_NugetSupport -eq $true">Adding Nuget support to the project...</message>
+		<templateFile condition="$PLASTER_PARAM_NugetSupport -eq $true"
+					  source="Module.nuspec"
+					  destination="source\${PLASTER_PARAM_Name}.nuspec" />
+		<templateFile condition="$PLASTER_PARAM_NugetSupport -eq $true"
+					  source="build\package-functions.ps1"
+					  destination="build\package-functions.ps1" />
+
+		<message condition="$PLASTER_PARAM_BuildAutomation -ne 'None'">Adding $PLASTER_PARAM_BuildAutomation support to the project...</message>
+		<templateFile condition="$PLASTER_PARAM_BuildAutomation -eq 'psake'"
+					  source="build\tasks.ps1"
+					  destination="build\tasks.ps1" />
+		<file condition="$PLASTER_PARAM_BuildAutomation -ne 'None'"
+			  source="build\build-functions.ps1"
+			  destination="build\build-functions.ps1" />
+
+        <requireModule condition="$PLASTER_PARAM_BuildAutomation -eq 'psake'" name="psake" minimumVersion="4.8.0"
+            message="Without psake, you will not be able to run the provided task PowerShell script"/>
+
+		<message condition="$PLASTER_PARAM_DependencyFramework -ne 'None'">Adding $PLASTER_PARAM_DependencyFramework support to the project...</message>
+		<templateFile condition="($PLASTER_PARAM_BuildAutomation -eq 'psake') -and ($PLASTER_PARAM_DependencyFramework -eq 'PSDepend')"
+					  source="build\tasks.depend.psd1"
+					  destination="build\tasks.depend.psd1" />
+		<templateFile condition="$PLASTER_PARAM_BuildAutomation -ne 'None'"
+					  source="build\build-functions.ps1"
+					  destination="build\build-functions.ps1" />
+
+        <requireModule condition="$PLASTER_PARAM_DependencyFramework -eq 'PSDepend'" name="PSDepend" minimumVersion="0.3.1"
+            message="Without PSDepend, you will not be able to automatically install and import dependencies using the included .depend.psd1 files."/>
+
+		<message condition="$PLASTER_PARAM_TestFramework -ne 'None'">Creating default test file...</message>
+        <templateFile condition="$PLASTER_PARAM_TestFramework -ne 'None'"
+					  source='test\Module.T.ps1'
+					  destination='tests\${PLASTER_PARAM_Name}.Tests.ps1' />
+
+        <requireModule condition="$PLASTER_PARAM_TestFramework -eq 'Pester'" name="Pester" minimumVersion="4.0.3"
+            message="Without Pester, you will not be able to run the provided Pester test to validate your module manifest file.`nWithout version 4.0.3, VS Code will not display Pester warnings and errors in the Problems panel."/>
+
+		<message>Creating your finishing script 'Invoke-CompleteModuleSetup.ps1'... </message>
+        <templateFile source='Invoke-CompleteModuleSetup.ps1'
+					  destination='Invoke-CompleteModuleSetup.ps1'
+					  openInEditor="true" />
+		<message>Finishing script created. Execute the script to complete the setup of your project.</message>
+	</content>
+</plasterManifest>
