@@ -15,8 +15,7 @@ The following steps will clone the repo, install all dependencies and execute a 
 
 1. `git clone git@github.com:rlvandaveer/HeliarPlasterTemplates.git`
 1. `cd Heliar-Plaster-Templates`
-1. `Install-Module -Name PSDepend`
-1. `Invoke-PSDepend ./build`
+1. `Install-Module -Name psake`
 1. `Invoke-psake ./build/tasks.ps1 -taskList Test`
 
 ## Dependencies
