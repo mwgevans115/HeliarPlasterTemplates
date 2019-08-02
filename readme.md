@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/heliar/Heliar%20Plaster%20Templates/_apis/build/status/rlvandaveer.HeliarPlasterTemplates?branchName=master)](https://dev.azure.com/heliar/Heliar%20Plaster%20Templates/_build/latest?definitionId=7&branchName=master)
+
 # Heliar Plaster Templates
 This repo contains [Plaster](https://github.com/PowerShell/Plaster) templates for quickly creating PowerShell projects and items.
 
