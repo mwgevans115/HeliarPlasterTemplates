@@ -11,7 +11,7 @@ In order to use this project you need the following:
 
 The following steps will clone the repo, install all dependencies and execute a build and all unit tests.
 
-1. `git clone`...
+1. `git clone git@github.com:rlvandaveer/HeliarPlasterTemplates.git`
 1. `cd Heliar-Plaster-Templates`
 1. `Install-Module -Name PSDepend`
 1. `Invoke-PSDepend ./build`
@@ -41,7 +41,7 @@ This project dependends on all of the following to manage dependencies, build, t
 
 ### Getting the source code
 
-* `git clone `...
+* `git clone git@github.com:rlvandaveer/HeliarPlasterTemplates.git`
 
 ## Running the tests
 
@@ -76,7 +76,7 @@ This project dependends on all of the following to manage dependencies, build, t
 
 ## License
 
-This project is unlicensed. No license outside the use by Robb Vandaveer and Heliar Systems is granted.
+* [MIT](https://raw.githubusercontent.com/rlvandaveer/HeliarPlasterTemplates/master/LICENSE)
 
 ## Acknowledgments
 
