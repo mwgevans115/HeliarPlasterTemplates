@@ -13,7 +13,7 @@ variables:
 
 steps:
 - pwsh: |
-        if ($null -eq (Get-Module -Name psake -listAvailable) {
+        if ($null -eq Get-Module -Name psake -listAvailable) {
           Install-Module psake -AcceptLicense -Force
         }
         Import-Module psake
