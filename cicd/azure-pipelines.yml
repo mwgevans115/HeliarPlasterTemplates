@@ -1,0 +1,119 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - releases/*
+  paths:
+    exclude:
+    - readme.md
+    - docs/*
+
+variables:
+- name: buildExePath
+  value: '$(System.DefaultWorkingDirectory)/build'
+- name: distributionPath
+  value: '$(System.DefaultWorkingDirectory)/dist'
+- name: moduleName
+  value: 'HeliarPlasterTemplates'
+- name: versionNumber
+  value: ''
+- name: isPreRelease
+  value: false
+- name: preReleaseTag
+  value: ''
+- group: DevOps-KeyVault
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build_PowerShell_Module
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - pwsh: |
+        if ($null -eq (Get-Module -Name psake -listAvailable)) {
+          Install-Module psake -AcceptLicense -Force
+        }
+        Import-Module psake
+        Invoke-psake ./build/tasks.ps1 -taskList Test
+        exit ([int](-not $psake.build_success))
+      displayName: Build Module and Execute Unit Tests
+      failOnStderr: true
+      name: Build_and_Test
+
+    - task: PublishTestResults@2
+      name: Publish_Test_Results
+      displayName: Publish Test Results
+      inputs:
+        testRunTitle: Test Results From Pester
+        testRunner: NUnit
+        testResultsFiles: Test-Results.xml
+        failTaskOnFailedTests: true
+
+    - publish: '$(distributionPath)'
+      name: Publish_Build_Artifacts
+      displayName: Publish Built PowerShell Module
+      artifact: '$(moduleName).$(Build.BuildNumber)'
+
+    - publish: '$(buildExePath)'
+      name: Publish_Execution_Source
+      displayName: Publish Build Execution Source
+      artifact: 'build'
+
+    - task: ArchiveFiles@2
+      name: Archive_Module_for_GitHub_Release
+      displayName: Archive Built PowerShell Module for GitHub Release
+      condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
+      inputs:
+        rootFolderOrFile: $(distributionPath)
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName).$(Build.BuildNumber).zip'
+        replaceExistingArchive: true
+
+    - task: GitHubRelease@1
+      name: Create_GitHub_Release
+      displayName: Create GitHub Release
+      condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
+      inputs:
+        gitHubConnection: GitHub Repo Pat
+        repositoryName: rlvandaveer/HeliarPlasterTemplates
+        action: create
+        assets: $(Build.ArtifactStagingDirectory)/*.zip
+        isPreRelease: $(isPreRelease)
+        tag: $(versionNumber)
+        tagSource: userSpecifiedTag
+        target: $(Build.SourceVersion)
+
+- stage: Deploy
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
+  jobs:
+  - deployment: Publish_PowerShell_Module
+    environment: PSGallery
+    pool:
+      vmImage: 'macos-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: none
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              path: $(System.DefaultWorkingDirectory)
+          - pwsh: |
+              Get-ChildItem -Path $(moduleName)* | Rename-Item -NewName 'dist'
+            displayName: Rename Artifact Folder
+            name: Rename_Artifact_Folder
+          - pwsh: |
+              if ($null -eq (Get-Module -Name psake -listAvailable)) {
+                Install-Module psake -AcceptLicense -Force
+              }
+              Import-Module psake
+              Invoke-psake ./build/tasks.ps1 -taskList Publish
+              exit ([int](-not $psake.build_success))
+            displayName: Publish Module to PSGallery
+            name: Publish_Module_To_PSGallery
+            env:
+              PSGalleryApiKey: $(heliar-publish-powershell-gallery-api-key)
+

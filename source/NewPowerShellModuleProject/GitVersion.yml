@@ -1,0 +1,6 @@
+mode: ContinuousDelivery
+branches:
+  develop:
+    increment: Patch
+ignore:
+  sha: []
