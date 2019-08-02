@@ -1,0 +1,57 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - develop
+    - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  packagePath: '$(System.DefaultWorkingDirectory)/dist'
+
+steps:
+- pwsh: |
+        $dpnd = Get-Module PSDepend -listAvailable
+        if ($null -eq $dpnd) {
+
+          Install-Module PSDepend -AcceptLicense -Force
+
+        }
+        Import-Module PSDepend
+
+        Invoke-PSDepend ./build
+
+        Invoke-psake ./build/tasks.ps1 -taskList Test
+  displayName: Execute Unit Tests and Build Package
+  failOnStderr: true
+  name: Build_and_Test
+
+- task: PublishTestResults@2
+  displayName: Publish Test Results
+  inputs:
+    testRunTitle: Test Results From Pester
+    buildPlatform: ubuntu
+    testRunner: NUnit
+    testResultsFiles: .\Test-Results.xml
+    failTaskOnFailedTests: true
+  name: Publish_Test_Results
+
+- task: ArchiveFiles@2
+  displayName: Archive Files
+  inputs:
+    rootFolderOrFile: $(packagePath)
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+  name: Archive_Package
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Package
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+  name: Publish_Package
