@@ -13,16 +13,10 @@ variables:
 
 steps:
 - pwsh: |
-        $dpnd = Get-Module PSDepend -listAvailable
-        if ($null -eq $dpnd) {
-
-          Install-Module PSDepend -AcceptLicense -Force
-
+        if ($null -eq (Get-Module -Name psake -listAvailable) {
+          Install-Module psake -AcceptLicense -Force
         }
-        Import-Module PSDepend
-
-        Invoke-PSDepend ./build
-
+        Import-Module psake
         Invoke-psake ./build/tasks.ps1 -taskList Test
   displayName: Execute Unit Tests and Build Package
   failOnStderr: true
