@@ -20,7 +20,7 @@ The following steps will clone the repo, install all dependencies and execute a 
 
 ## Dependencies
 
-This project dependends on all of the following to manage dependencies, build, test, version, and publish, and will install them if they are not present when executed:
+This project depends on the following modules/applications to manage dependencies, build, test, version, and publish, and will install them if they are not present when executed:
 
 * [BuildHelpers](https://github.com/RamblingCookieMonster/BuildHelpers)
 * [GitVersion](https://gitversion.readthedocs.io/en/latest/)
