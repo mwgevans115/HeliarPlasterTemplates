@@ -17,7 +17,11 @@ function EnsureNuGet {
 
 		if ($IsLinux) {
 
-			Exec { sudo apt install nuget }
+			try {
+				Exec { sudo apt install nuget }
+			} catch {
+				if ($_ -notcontains 'warning') { throw $_ }
+			}
 
 		} elseif ($IsMacOS) {
 
