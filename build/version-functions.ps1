@@ -16,10 +16,9 @@ function EnsureGitVersion {
 				Write-Host 'Downloading GitVersion...'
 				wget 'https://github.com/GitTools/GitVersion/releases/download/5.1.3/gitversion-linux-5.1.3.tar.gz'
 				Write-Host 'Unzipping GitVersion...'
-				unzip 'gitversion-linux-5.1.3.tar.gz' GitVersion
+				tar xvzf 'gitversion-linux-5.1.3.tar.gz'
 				Write-Host 'Creating symlink...'
-				cd GitVersion
-				ln -S "$pwd/gitversion" /usr/local/bin/gitversionß
+				ln -S "$pwd/gitversion" /usr/local/bin/gitversion
 			}
 
 		} elseif ($IsMacOS) {
