@@ -134,7 +134,7 @@
 
 		<message condition="$PLASTER_PARAM_TestFramework -ne 'None'">Creating default test file...</message>
         <templateFile condition="$PLASTER_PARAM_TestFramework -ne 'None'"
-					  source='test\Module.T.ps1'
+					  source='tests\Module.T.ps1'
 					  destination='tests\${PLASTER_PARAM_Name}.Tests.ps1' />
 
         <requireModule condition="$PLASTER_PARAM_TestFramework -eq 'Pester'" name="Pester" minimumVersion="4.0.3"
