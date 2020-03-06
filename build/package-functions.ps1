@@ -20,7 +20,8 @@ function EnsureNuGet {
 			try {
 				Exec { sudo apt install nuget }
 			} catch {
-				if ($_ -notcontains 'warning') { throw $_ }
+				Write-Host $LASTEXITCODE
+				Write-Host ($_ -notcontains 'WARNING') #ß{ throw $_ }
 			}
 
 		} elseif ($IsMacOS) {
