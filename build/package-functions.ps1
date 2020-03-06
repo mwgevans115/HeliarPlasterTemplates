@@ -6,32 +6,36 @@ function EnsureNuGet {
 
 	try {
 
-		Write-Debug "Checking for NuGet install..."
+		Write-Host "Checking for NuGet install..."
 		$help = Exec { return nuget help }
 		$ver = $help.Split([Environment]::NewLine) | Select-Object -First 1
-		Write-Debug "$ver installed"
+		Write-Host "$ver installed"
 
 	} catch {
 
-		Write-Debug "NuGet not installed, installing..."
+		Write-Host "NuGet not installed, installing..."
 
 		if ($IsLinux) {
 
 			Exec {
 				try {
+					Write-Host 'Executing apt install on Linux...'
 					sudo apt install nuget
+					Write-Host "Last exit code was: $LASTEXITCODE"
+					Exit 0
 				} catch {
-					Write-Host $LASTEXITCODE
-					Write-Host ($_ -notcontains 'WARNING') { throw $_ }
+					if ($_ -notcontains 'WARNING') { throw $_ }
 				}
 			}
 
 		} elseif ($IsMacOS) {
 
+			Write-Host 'Executing brew install on MacOS...'
 			Exec { brew install nuget }
 
 		} elseif ($IsWindows) {
 
+			Write-Host 'Executing choco install on Windows...'
 			Exec { choco install nuget.commandline -y }
 
 		}
