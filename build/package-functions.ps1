@@ -18,15 +18,15 @@ function EnsureNuGet {
 		if ($IsLinux) {
 
 			Exec {
-				try {
+				# try {
 					Write-Host 'Executing apt install on Linux...'
-					sudo apt install nuget
+					sudo apt-get install nuget
 					Write-Host "Last exit code was: $LASTEXITCODE"
-					Exit 0
-				} catch {
-					Exit 0
-					# if ($_ -notcontains 'WARNING') { throw $_ }
-				}
+				# 	Exit 0
+				# } catch {
+				# 	Exit 0
+				# 	# if ($_ -notcontains 'WARNING') { throw $_ }
+				# }
 			}
 
 		} elseif ($IsMacOS) {
