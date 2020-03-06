@@ -33,7 +33,7 @@ steps:
     testRunTitle: Test Results From Pester
     buildPlatform: ubuntu
     testRunner: NUnit
-    testResultsFiles: .\Test-Results.xml
+    testResultsFiles: Test-Results.xml
     failTaskOnFailedTests: true
   name: Publish_Test_Results
 
