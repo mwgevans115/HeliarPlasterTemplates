@@ -48,8 +48,9 @@ Task Init -description "Initializes the build chain by installing dependencies" 
 
 Task Test -depends Init, Build -description "Executes all unit tests" {
 
-	Invoke-Pester -Script $BuildContext.testPath -OutputFile "$($BuildContext.rootPath)\Test-Results.xml" -OutputFormat NUnitXml
-	Write-Host "$($BuildContext.rootPath)\Test-Results.xml"
+	$testOutput = (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml')
+	Invoke-Pester -Script $BuildContext.testPath -OutputFile $testOutput -OutputFormat NUnitXml
+	Write-Host "Test output found: " + (Test-Path -Path $testOutput)
 }
 
 Task Publish -depends Init -description "Publishes the HeliarStandardsAzure module and all submodules to Azure Artifacts" {
