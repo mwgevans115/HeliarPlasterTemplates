@@ -25,7 +25,7 @@ Task Clean -description "Deletes all build artifacts and the distribution (dist)
 
 Task Build -depends Clean, Init -description "Creates ready to distribute modules with all required files" {
 
-	$BuildContext.versionInfo = (gitversion | ConvertFrom-Json -AsHashtable)
+	$BuildContext.versionInfo = GetVersionInfo
 
 	New-Item $BuildContext.distributionPath -ItemType Directory
 
