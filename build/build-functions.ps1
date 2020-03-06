@@ -6,6 +6,8 @@ function Build-Module ([ValidateNotNull()] [hashtable] $BuildContext) {
 
 	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.DistributionPath
 
+	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.md") | Copy-Item -Destination $BuildContext.DistributionPath
+
 	$templates | Copy-Item -Recurse -Destination $BuildContext.DistributionPath
 
 	Build-ModuleDefinition $BuildContext $publicFuncs $privateFuncs
