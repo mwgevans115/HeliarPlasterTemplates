@@ -351,4 +351,8 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Build output/artifacts
 dist/
+
+#Test output/artifacts
+Test-Results.xml
