@@ -17,7 +17,7 @@ function EnsureNuGet {
 
 		if ($IsLinux) {
 
-			Exec { apt install nuget }
+			Exec { sudo apt install nuget }
 
 		} elseif ($IsMacOS) {
 
