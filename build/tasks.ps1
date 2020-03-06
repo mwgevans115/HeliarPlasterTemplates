@@ -25,7 +25,7 @@ Task Clean -description "Deletes all build artifacts and the distribution (dist)
 
 Task Build -depends Clean, Init -description "Creates ready to distribute modules with all required files" {
 
-	$BuildContext.versionInfo = @{ MajorMinorPatch = '1.0.0'; NuGetVersionV2 = '1.0.0' } #GetVersionInfo
+	$BuildContext.versionInfo = (gitversion | ConvertFrom-Json -AsHashtable)
 
 	New-Item $BuildContext.distributionPath -ItemType Directory
 
@@ -48,9 +48,8 @@ Task Init -description "Initializes the build chain by installing dependencies" 
 
 Task Test -depends Init, Build -description "Executes all unit tests" {
 
-	$testOutput = (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml')
-	Invoke-Pester -Script $BuildContext.testPath -OutputFile $testOutput -OutputFormat NUnitXml
-	Write-Host "Test output found: " + (Test-Path -Path $testOutput)
+	Invoke-Pester -Script $BuildContext.testPath -OutputFile (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
+
 }
 
 Task Publish -depends Init -description "Publishes the HeliarStandardsAzure module and all submodules to Azure Artifacts" {
