@@ -10,7 +10,7 @@ trigger:
     - docs/*
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'macOS-latest'
 
 variables:
   packagePath: '$(System.DefaultWorkingDirectory)/dist'

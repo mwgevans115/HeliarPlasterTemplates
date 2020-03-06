@@ -12,6 +12,7 @@ function EnsureGitVersion {
 
 		if ($IsLinux) {
 
+			#TODO: RLV - determine how to install/execute gitversion on Linux
 			Exec {
 				Write-Host 'Downloading GitVersion...'
 				wget 'https://github.com/GitTools/GitVersion/releases/download/5.1.3/gitversion-linux-5.1.3.tar.gz'
