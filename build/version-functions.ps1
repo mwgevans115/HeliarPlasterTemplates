@@ -10,12 +10,15 @@ function EnsureGitVersion {
 
 		Write-Debug "Gitversion not installed, installing..."
 
-		$platform = $PSVersionTable.Platform
-		if ($platform -eq 'Unix') {
+		if ($IsLinux) {
+
+			Exec { sudo apt-get install gitversion }
+
+		} elseif ($IsMacOS) {
 
 			Exec { brew install gitversion }
 
-		} elseif ($platform -like 'Win*') {
+		} elseif ($IsWindows) {
 
 			Exec { choco install gitversion.portable -y }
 
