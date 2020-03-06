@@ -17,11 +17,13 @@ function EnsureNuGet {
 
 		if ($IsLinux) {
 
-			try {
-				Exec { sudo apt install nuget }
-			} catch {
-				Write-Host $LASTEXITCODE
-				Write-Host ($_ -notcontains 'WARNING') #ß{ throw $_ }
+			Exec {
+				try {
+					sudo apt install nuget
+				} catch {
+					Write-Host $LASTEXITCODE
+					Write-Host ($_ -notcontains 'WARNING') { throw $_ }
+				}
 			}
 
 		} elseif ($IsMacOS) {
