@@ -15,12 +15,15 @@ function EnsureNuGet {
 
 		Write-Debug "NuGet not installed, installing..."
 
-		$platform = $PSVersionTable.Platform
-		if ($platform -eq 'Unix') {
+		if ($IsLinux) {
+
+			Exec { apt install nuget }
+
+		} elseif ($IsMacOS) {
 
 			Exec { brew install nuget }
 
-		} elseif ($platform -like 'Win*') {
+		} elseif ($IsWindows) {
 
 			Exec { choco install nuget.commandline -y }
 
