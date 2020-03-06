@@ -18,6 +18,18 @@ The following steps will clone the repo, install all dependencies and execute a 
 1. `Install-Module -Name psake`
 1. `Invoke-psake ./build/tasks.ps1 -taskList Test`
 
+### Getting the source code
+
+* `git clone git@github.com:rlvandaveer/HeliarPlasterTemplates.git`
+
+### Running the tests
+
+* `Invoke-psake ./build/tasks.ps1 -taskList Test`
+
+### Publishing
+
+* `Invoke-psake ./build/tasks.ps1 -taskList Publish`
+
 ## Dependencies
 
 This project depends on the following modules/applications to manage dependencies, build, test, version, and publish, and will install them if they are not present when executed:
@@ -38,30 +50,22 @@ This project depends on the following modules/applications to manage dependencie
 - /tests - contains unit tests for the Heliar Plaster Templates PowerShell module
 
 ## Templates
-1. NewPowerShellModuleProject - creates a project with configuration options for building, publishing, testing, and versioning a PowerShell module.
+1. **NewPowerShellModuleProject** - this template will create a project with configuration options for building, publishing, testing, and versioning a PowerShell module.
 
-### Getting the source code
+## Installing and Using the Templates
 
-* `git clone git@github.com:rlvandaveer/HeliarPlasterTemplates.git`
-
-## Running the tests
-
-* `Invoke-psake ./build/tasks.ps1 -taskList Test`
-
-## Publishing
-
-* `Invoke-psake ./build/tasks.ps1 -taskList Publish`
+**TODO**
 
 ## Built With
 
+* [Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/)
 * [BuildHelpers](https://github.com/RamblingCookieMonster/BuildHelpers)
 * [GitVersion](https://gitversion.readthedocs.io/en/latest/)
 * [Nuget](https://docs.microsoft.com/en-us/nuget/install-nuget-client-tools)
-* [PSDepend](https://github.com/RamblingCookieMonster/PSDepend)
 * [Pester](https://github.com/pester/Pester)
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell)
 * [Psake](https://github.com/psake/psake)
-* [Azure Pipelines](https://azure.microsoft.com/en-us/services/devops/pipelines/)
+* [PSDepend](https://github.com/RamblingCookieMonster/PSDepend)
 
 ## Contributing
 

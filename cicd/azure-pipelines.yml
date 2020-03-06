@@ -4,6 +4,10 @@ trigger:
     include:
     - develop
     - master
+  paths:
+    exclude:
+    - readme.md
+    - docs/*
 
 pool:
   vmImage: 'ubuntu-latest'
