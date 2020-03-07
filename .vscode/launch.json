@@ -5,6 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "PowerShell Launch Current File",
+			"type": "PowerShell",
+			"request": "launch",
+			"script": "${file}",
+			"args": [],
+			"cwd": "${file}"
+		},
+		{
 			"name": "Build Plaster Template Module",
 			"type": "PowerShell",
 			"request": "launch",
