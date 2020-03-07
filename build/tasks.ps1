@@ -48,7 +48,7 @@ Task Init -description "Initializes the build chain by installing dependencies" 
 
 Task Test -depends Init, Build -description "Executes all unit tests" {
 
-	Invoke-Pester -Script $BuildContext.testPath -OutputFile (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
+	Invoke-Pester -Script @{ Path = $BuildContext.testPath; Parameters = @{ BuildContext = $BuildContext } }  -OutputFile (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
 
 }
 
