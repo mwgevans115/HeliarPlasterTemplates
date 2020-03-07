@@ -3,10 +3,11 @@ param(
 	[hashtable]$BuildContext
 )
 
-$sut = Join-Path -Path $BuildContext.distributionPath -ChildPath "HeliarPlasterTemplates.psd1"
+Describe 'Testing Module Nuget Package' {
 
-Describe 'Module Package Tests' {
-	It 'Once the module is built, has a valid module manifest file' {
-		Test-ModuleManifest -Path $sut
+	$sut = Get-ChildItem -Path $BuildContext.distributionPath -Filter "HeliarPlasterTemplates.*.nupkg"
+
+	It 'Has a single Nuget Package' {
+		$sut | Should -HaveCount 1
 	}
 }
