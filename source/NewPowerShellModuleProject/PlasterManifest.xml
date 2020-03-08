@@ -2,10 +2,10 @@
 <plasterManifest schemaVersion="1.1" templateType="Project"
 	xmlns="http://www.microsoft.com/schemas/PowerShell/Plaster/v1">
 	<metadata>
-		<name>NewHeliarPowerShellModuleProject</name>
+		<name>NewPowerShellModuleProject</name>
 		<id>c6774698-7e41-4205-83c0-ce7df52da9a8</id>
 		<version>0.0.1</version>
-		<title>New Heliar PowerShell Module Project</title>
+		<title>New PowerShell Module Project</title>
 		<description>Creates the structure for a new PowerShell module project</description>
 		<author>R. L. Vandaveer</author>
 		<tags>PowerShell, module, project</tags>
