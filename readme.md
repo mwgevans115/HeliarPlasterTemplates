@@ -30,6 +30,8 @@ The following steps will clone the repo, install all dependencies and execute a 
 
 * `Invoke-psake ./build/tasks.ps1 -taskList Publish`
 
+For more see the [build readme](./docs/building-and-publishing.md)
+
 ## Dependencies
 
 This project depends on the following modules/applications to manage dependencies, build, test, version, and publish, and will install them if they are not present when executed:
@@ -37,9 +39,10 @@ This project depends on the following modules/applications to manage dependencie
 * [BuildHelpers](https://github.com/RamblingCookieMonster/BuildHelpers)
 * [GitVersion](https://gitversion.readthedocs.io/en/latest/)
 * [Nuget](https://docs.microsoft.com/en-us/nuget/install-nuget-client-tools)
-* [PSDepend](https://github.com/RamblingCookieMonster/PSDepend)
 * [Pester](https://github.com/pester/Pester)
 * [Psake](https://github.com/psake/psake)
+* [PSDepend](https://github.com/RamblingCookieMonster/PSDepend)
+* [PSDeploy](https://github.com/RamblingCookieMonster/PSDeploy)
 
 ## Structure
 - /build - contains the code for destributing the templates contained in the project
@@ -66,6 +69,7 @@ This project depends on the following modules/applications to manage dependencie
 * [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell)
 * [Psake](https://github.com/psake/psake)
 * [PSDepend](https://github.com/RamblingCookieMonster/PSDepend)
+* [PSDeploy](https://github.com/RamblingCookieMonster/PSDeploy)
 
 ## Contributing
 
