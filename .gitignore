@@ -354,5 +354,9 @@ MigrationBackup/
 # Build output/artifacts
 dist/
 
-#Test output/artifacts
+# Test output/artifacts
 Test-Results.xml
+
+# Secrets and Local Only
+*secret*
+*local*
