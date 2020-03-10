@@ -13,7 +13,9 @@
 	AliasesToExport   = @()
 	PrivateData = @{
 		PSData = @{
-			Tags = @('powershell', 'plaster', 'templating', 'codegeneration', 'scaffold')
+			LicenseUri = 'https://raw.githubusercontent.com/rlvandaveer/HeliarPlasterTemplates/master/LICENSE'
+			ProjectUri = 'https://github.com/rlvandaveer/HeliarPlasterTemplates'
+			Tags	   = @('powershell', 'plaster', 'templating', 'codegeneration', 'scaffold')
 			Extensions = @(
 				@{
 					Module = 'Plaster'
