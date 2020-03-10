@@ -62,3 +62,11 @@ function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.File
 
 	return $BaseNames
 }
+
+<#
+.SUMMARY
+	Tests if a build is required by checking if key build outputs are present
+#>
+function Test-BuildRequired ([ValidateNotNullOrEmpty()] [string] $Path) {
+	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include 'HeliarPlasterTemplates.*.nupkg', 'HeliarPlasterTemplates.psd1'))
+}

@@ -6,6 +6,7 @@ Include "version-functions.ps1"
 
 Properties {
 	$BuildContext = @{
+		buildPath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "build")
 		distributionPath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "dist")
 		rootPath = (Split-Path -Parent $PSScriptRoot)
 		sourcePath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "source")
@@ -15,15 +16,7 @@ Properties {
 	}
 }
 
-Task default -depends Test
-
-Task Clean -description "Deletes all build artifacts and the distribution (dist) folder" {
-
-	Remove-Item $BuildContext.distributionPath -Recurse -Force -ErrorAction SilentlyContinue
-
-}
-
-Task Build -depends Clean, Init -description "Creates ready to distribute modules with all required files" {
+Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
 	$BuildContext.versionInfo = GetVersionInfo
 
@@ -34,7 +27,17 @@ Task Build -depends Clean, Init -description "Creates ready to distribute module
 
 }
 
-Task Init -description "Initializes the build chain by installing dependencies" {
+Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.distributionPath }
+
+Task Clean -description 'Deletes all build artifacts and the distribution folder' {
+
+	Remove-Item $BuildContext.distributionPath -Recurse -Force -ErrorAction SilentlyContinue
+
+}
+
+Task default -depends Test
+
+Task Init -description 'Initializes the build chain by installing dependencies' {
 
 	$psd = Get-Module PSDepend -listAvailable
 	if ($null -eq $psd) {
@@ -46,17 +49,14 @@ Task Init -description "Initializes the build chain by installing dependencies" 
 
 }
 
-Task Test -depends Init, Build -description "Executes all unit tests" {
+Task Publish -depends Init, Check-And-Build, Test -description 'Publishes the module and all submodules to the PSGallery' {
+
+	Invoke-PSDeploy -Path $BuildContext.buildPath -DeploymentRoot $BuildContext.distributionPath
+
+}
+
+Task Test -depends Init, Check-And-Build -description 'Executes all unit tests' {
 
 	Invoke-Pester -Script @{ Path = $BuildContext.testPath; Parameters = @{ BuildContext = $BuildContext } }  -OutputFile (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
 
 }
-
-Task Publish -depends Init -description "Publishes the HeliarStandardsAzure module and all submodules to Azure Artifacts" {
-
-	Assert (Test-Path -Path (Join-Path -Path $BuildContext.DistributionPath -ChildPath "*") -Include "*.nupkg") -failureMessage "Module not built. Please build before publishing or use the BuildAndPublish task."
-	PublishModule -BuildContext $BuildContext
-
-}
-
-Task BuildAndPublish -depends Build, Test, Publish

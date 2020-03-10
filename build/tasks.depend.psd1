@@ -9,4 +9,5 @@
 	BuildHelpers = 'latest'
 	Pester = 'latest'
 	psake = 'latest'
+	PSDeploy = 'latest'
 }
