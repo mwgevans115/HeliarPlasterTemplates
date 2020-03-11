@@ -21,7 +21,7 @@ Properties {
 		RootPath = $ROOT_PATH
 		SourcePath = $SOURCE_PATH
 		TestPath = $TESTS_PATH
-		VersionInfo = $null
+		VersionInfo = [hashtable]$null
 	}
 }
 
