@@ -3,54 +3,56 @@ trigger:
   branches:
     include:
     - develop
-    - master
+    - releases/*
   paths:
     exclude:
     - readme.md
     - docs/*
 
-pool:
-  vmImage: 'macOS-latest'
-
 variables:
   packagePath: '$(System.DefaultWorkingDirectory)/dist'
 
-steps:
-- pwsh: |
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'macOS-latest'
+    steps:
+    - pwsh: |
         if ($null -eq (Get-Module -Name psake -listAvailable)) {
           Install-Module psake -AcceptLicense -Force
         }
         Import-Module psake
         Invoke-psake ./build/tasks.ps1 -taskList Test
         exit ([int](-not $psake.build_success))
-  displayName: Execute Unit Tests and Build Package
-  failOnStderr: true
-  name: Build_and_Test
+      displayName: Build Package and Execute Unit Tests
+      failOnStderr: true
+      name: Build_and_Test
 
-- task: PublishTestResults@2
-  displayName: Publish Test Results
-  inputs:
-    testRunTitle: Test Results From Pester
-    buildPlatform: ubuntu
-    testRunner: NUnit
-    testResultsFiles: Test-Results.xml
-    failTaskOnFailedTests: true
-  name: Publish_Test_Results
+    - task: PublishTestResults@2
+      displayName: Publish Test Results
+      inputs:
+        testRunTitle: Test Results From Pester
+        testRunner: NUnit
+        testResultsFiles: Test-Results.xml
+        failTaskOnFailedTests: true
+      name: Publish_Test_Results
 
-- task: ArchiveFiles@2
-  displayName: Archive Files
-  inputs:
-    rootFolderOrFile: $(packagePath)
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
-  name: Archive_Package
+    - task: ArchiveFiles@2
+      displayName: Archive Built Module
+      inputs:
+        rootFolderOrFile: $(packagePath)
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        replaceExistingArchive: true
+      name: Archive_Module
 
-- task: PublishBuildArtifacts@1
-  displayName: Publish Package
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-  name: Publish_Package
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifacts
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+      name: Publish_Artifacts
