@@ -35,7 +35,7 @@ function EnsureGitVersion {
 function GetVersionInfo {
 
 	EnsureGitVersion
-	$ver = (Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
+	[hashtable]$ver = [hashtable](Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
 	return $ver
 
 }
