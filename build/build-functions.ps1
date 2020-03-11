@@ -4,17 +4,15 @@ function Build-Module ([ValidateNotNull()] [hashtable] $BuildContext) {
 	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
 	$templates = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Directory
 
-	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.DistributionPath
+	New-Item $BuildContext.ModuleDistributionPath -ItemType Directory
 
-	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.md") | Copy-Item -Destination $BuildContext.DistributionPath
+	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.ModuleDistributionPath
 
-	$templates | Copy-Item -Recurse -Destination $BuildContext.DistributionPath
+	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.md") | Copy-Item -Destination $BuildContext.ModuleDistributionPath
+
+	$templates | Copy-Item -Recurse -Destination $BuildContext.ModuleDistributionPath
 
 	Build-ModuleDefinition $BuildContext $publicFuncs $privateFuncs
-
-	$nuspec = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include "*.nuspec" | Copy-Item -Destination $BuildContext.DistributionPath -PassThru | Get-Item
-
-	(Get-Content -Path $nuspec.FullName -Raw).Replace("{version-replace-me}", $BuildContext.versionInfo.NuGetVersionV2) | Set-Content -Path $nuspec.FullName
 
 }
 
@@ -22,13 +20,17 @@ function Build-ModuleDefinition ([ValidateNotNull()] [hashtable] $BuildContext, 
 
 	$defPath = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include "*.definition.psd1"
 
-	$definition = Import-PowerShellDataFile -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath $defPath.Name)
+	$definition = Import-PowerShellDataFile -Path $defPath.FullName
 
 	$name = $defPath.Name.Split('.')[0]
-	$path = (Join-Path -Path $BuildContext.DistributionPath -ChildPath "$name.psd1")
+	$path = (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "$name.psd1")
 
 	$definition.Add("Path", $path)
-	$definition.Add("ModuleVersion", $BuildContext.versionInfo.MajorMinorPatch)
+	$definition.Add("ModuleVersion", $BuildContext.VersionInfo.MajorMinorPatch)
+
+	if ($BuildContext.versionInfo.NuGetPreReleaseTagV2) {
+		$definition.PrivateData.PSData.Add('Prerelease', $BuildContext.versionInfo.NuGetPreReleaseTagV2)
+	}
 
 	if ($null -ne $PublicFuncs) {
 		$definition.FileList += [string[]]$PublicFuncs.Name
@@ -68,5 +70,5 @@ function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.File
 	Tests if a build is required by checking if key build outputs are present
 #>
 function Test-BuildRequired ([ValidateNotNullOrEmpty()] [string] $Path) {
-	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include 'HeliarPlasterTemplates.*.nupkg', 'HeliarPlasterTemplates.psd1'))
+	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include $BuildContext.ModuleName))
 }

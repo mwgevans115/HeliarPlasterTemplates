@@ -2,7 +2,7 @@ param(
 	[Parameter(Mandatory = $true)]
 	[hashtable]$BuildContext
 )
-$manifest = Join-Path -Path $BuildContext.distributionPath -ChildPath "HeliarPlasterTemplates.psd1"
+$manifest = Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "HeliarPlasterTemplates.psd1"
 
 Describe 'Testing Module Manifest' {
 

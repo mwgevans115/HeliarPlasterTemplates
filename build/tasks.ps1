@@ -1,37 +1,45 @@
 # Defines all of the psake tasks used to build, test, and publish this project
 
 Include "build-functions.ps1"
-Include "package-functions.ps1"
 Include "version-functions.ps1"
+
+New-Variable -Name MODULE_NAME -Value 'HeliarPlasterTemplates' -Option Constant
+New-Variable -Name ROOT_PATH -Value (Split-Path -Parent $PSScriptRoot) -Option Constant
+New-Variable -Name BUILD_PATH -Value (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath 'build') -Option Constant
+New-Variable -Name DISTRIBUTION_PATH -Value (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath 'dist') -Option Constant
+New-Variable -Name MODULE_DISTRIBUTION_PATH -Value (Join-Path -Path $DISTRIBUTION_PATH -ChildPath $MODULE_NAME) -Option Constant
+New-Variable -Name SOURCE_PATH -Value (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath 'source') -Option Constant
+New-Variable -Name TESTS_PATH -Value (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath 'tests') -Option Constant
 
 Properties {
 	$BuildContext = @{
-		buildPath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "build")
-		distributionPath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "dist")
-		rootPath = (Split-Path -Parent $PSScriptRoot)
-		sourcePath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "source")
-		testPath = (Join-Path -Path (Split-Path -Parent $PSScriptRoot) -ChildPath "tests")
-		versionInfo = $null
-		nugetSource = $null
+		BuildPath = $BUILD_PATH
+		DistributionPath = $DISTRIBUTION_PATH
+		ModuleDistributionPath = $MODULE_DISTRIBUTION_PATH
+		ModuleName = $MODULE_NAME
+		PsRepository = @{ Source = 'PSGallery'; Url = 'https://www.powershellgallery.com/api/v2' }
+		RootPath = $ROOT_PATH
+		SourcePath = $SOURCE_PATH
+		TestPath = $TESTS_PATH
+		VersionInfo = $null
 	}
 }
 
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
-	$BuildContext.versionInfo = GetVersionInfo
+	$BuildContext.VersionInfo = GetVersionInfo
 
-	New-Item $BuildContext.distributionPath -ItemType Directory
+	New-Item $BuildContext.DistributionPath -ItemType Directory
 
 	Build-Module -BuildContext $BuildContext
-	PackModule -BuildContext $BuildContext
 
 }
 
-Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.distributionPath }
+Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.moduleDistributionPath }
 
 Task Clean -description 'Deletes all build artifacts and the distribution folder' {
 
-	Remove-Item $BuildContext.distributionPath -Recurse -Force -ErrorAction SilentlyContinue
+	Remove-Item $BuildContext.DistributionPath -Recurse -Force -ErrorAction SilentlyContinue
 
 }
 
@@ -51,12 +59,12 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 
 Task Publish -depends Init, Check-And-Build, Test -description 'Publishes the module and all submodules to the PSGallery' {
 
-	Invoke-PSDeploy -Path $BuildContext.buildPath -DeploymentRoot $BuildContext.distributionPath
+	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
 
 }
 
 Task Test -depends Init, Check-And-Build -description 'Executes all unit tests' {
 
-	Invoke-Pester -Script @{ Path = $BuildContext.testPath; Parameters = @{ BuildContext = $BuildContext } }  -OutputFile (Join-Path -Path $BuildContext.rootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
+	Invoke-Pester -Script @{ Path = $BuildContext.TestPath; Parameters = @{ BuildContext = $BuildContext } }  -OutputFile (Join-Path -Path $BuildContext.RootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
 
 }
