@@ -3,6 +3,8 @@ trigger:
   branches:
     include:
     - develop
+    - features/*
+    - master
     - releases/*
   paths:
     exclude:
