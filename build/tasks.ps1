@@ -27,7 +27,9 @@ Properties {
 
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
-	$BuildContext.VersionInfo = GetVersionInfo
+	$ver = GetVersionInfo
+	$BuildContext.VersionInfo = $ver
+	Write-Host '$ver Type: ' + $ver.GetType()
 	Write-Host '$BuildContext.VersionInfo Type: ' + $BuildContext.VersionInfo.GetType()
 	if ($ENV:BHBuildSystem -eq 'Azure Pipelines') {
 		Write-VersionInfoToAzureDevOps -Version $BuildContext.VersionInfo
