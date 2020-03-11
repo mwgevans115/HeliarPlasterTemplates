@@ -1,4 +1,14 @@
-function Build-Module ([ValidateNotNull()] [hashtable] $BuildContext) {
+<#
+.SUMMARY
+	Builds the PowerShell module and any submodules
+#>
+function Build-Module {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNull()]
+		[hashtable]
+		$BuildContext
+	)
 
 	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Public/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
 	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
@@ -16,7 +26,17 @@ function Build-Module ([ValidateNotNull()] [hashtable] $BuildContext) {
 
 }
 
-function Build-ModuleDefinition ([ValidateNotNull()] [hashtable] $BuildContext, [System.IO.FileInfo[]] $PublicFuncs, [System.IO.FileInfo[]] $PrivateFuncs) {
+<#
+.SUMMARY
+	Creates the module's manifest using the definition data file
+#>
+function Build-ModuleDefinition {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNull()] [hashtable] $BuildContext,
+		[System.IO.FileInfo[]] $PublicFuncs,
+		[System.IO.FileInfo[]] $PrivateFuncs
+	)
 
 	$defPath = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include "*.definition.psd1"
 
@@ -51,7 +71,16 @@ function Build-ModuleDefinition ([ValidateNotNull()] [hashtable] $BuildContext, 
 	}
 }
 
-function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.FileInfo[]] $PrivateFuncs) {
+<#
+.SUMMARY
+	Retrieves nested modules
+#>
+function Get-NestedModules {
+	[CmdletBinding()]
+	param (
+		[System.IO.FileInfo[]] $PublicFuncs,
+		[System.IO.FileInfo[]] $PrivateFuncs
+	)
 
 	[string[]]$BaseNames = $null
 	if ($null -ne $PrivateFuncs) {
@@ -69,6 +98,11 @@ function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.File
 .SUMMARY
 	Tests if a build is required by checking if key build outputs are present
 #>
-function Test-BuildRequired ([ValidateNotNullOrEmpty()] [string] $Path) {
+function Test-BuildRequired {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNullOrEmpty()] [string] $Path
+	)
+
 	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include $BuildContext.ModuleName))
 }
