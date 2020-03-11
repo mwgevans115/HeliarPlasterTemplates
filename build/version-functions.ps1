@@ -34,8 +34,8 @@ function EnsureGitVersion {
 
 function GetVersionInfo {
 
-	EnsureGitVersion
-	Exec { return gitversion } | ConvertFrom-Json -AsHashtable
+	[void]EnsureGitVersion
+	return (Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
 }
 
 function Write-VersionInfoToAzureDevOps {
