@@ -43,7 +43,6 @@ function GetVersionInfo {
 function Write-VersionInfoToAzureDevOps {
 	[CmdletBinding()]
 	param (
-		[ValidateNotNullOrEmpty()]
 		[HashTable]
 		$Version
 	)
