@@ -39,3 +39,15 @@ function GetVersionInfo {
 	return $ver
 
 }
+
+function Write-VersionInfoToAzureDevOps {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNullOrEmpty()]
+		[HashTable]
+		$Version
+	)
+
+	Write-Host "##vso[build.updatebuildnumber]$($Version.NuGetVersionV2).$ENV:BUILD_BUILDNUMBER"
+
+}

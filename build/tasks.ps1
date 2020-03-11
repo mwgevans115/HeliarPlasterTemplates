@@ -28,12 +28,17 @@ Properties {
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
 	$BuildContext.VersionInfo = GetVersionInfo
+	if ($ENV:BHBuildSystem -eq 'Azure Pipelines') {
+		Write-VersionInfoToAzureDevOps -Version $BuildContext.VersionInfo
+	}
 
 	New-Item $BuildContext.DistributionPath -ItemType Directory
 
 	Build-Module -BuildContext $BuildContext
 
 }
+
+Task Build-And-Publish -depends Clean, Init, Build, Test -description ''
 
 Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.moduleDistributionPath }
 
@@ -55,10 +60,12 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 
 	Invoke-PSDepend $PSScriptRoot -Force
 
+	Set-BuildEnvironment -Force
 }
 
-Task Publish -depends Init, Check-And-Build, Test -description "Publishes the module and all submodules to the $BuildContext.PsRepository.Name" {
+Task Publish -depends Init -description "Publishes the module and all submodules to the $($BuildContext.PsRepository.Name)" {
 
+	Assert (Test-Path -Path (Join-Path -Path $BuildContext.DistributionPath -ChildPath "*") -Include "*.psd1") -failureMessage "Module not built. Please build before publishing or use the Build-And-Publish task."
 	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
 
 }
