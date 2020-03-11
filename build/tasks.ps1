@@ -57,7 +57,7 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 
 }
 
-Task Publish -depends Init, Check-And-Build, Test -description 'Publishes the module and all submodules to the PSGallery' {
+Task Publish -depends Init, Check-And-Build, Test -description "Publishes the module and all submodules to the $BuildContext.PsRepository.Name" {
 
 	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
 
