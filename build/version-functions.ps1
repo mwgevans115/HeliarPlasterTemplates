@@ -35,10 +35,7 @@ function EnsureGitVersion {
 function GetVersionInfo {
 
 	EnsureGitVersion
-	[hashtable]$ver = [hashtable](Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
-	Write-Host $ver.GetType()
-	return $ver
-
+	Exec { return gitversion } | ConvertFrom-Json -AsHashtable
 }
 
 function Write-VersionInfoToAzureDevOps {
