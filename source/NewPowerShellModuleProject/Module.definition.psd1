@@ -11,4 +11,12 @@
 	CmdletsToExport   = @()
 	VariablesToExport = @()
 	AliasesToExport   = @()
+	PrivateData = @{
+		PSData = @{
+			LicenseUri = '<%=$PLASTER_PARAM_LicenseUri%>'
+			ProjectUri = '<%=$PLASTER_PARAM_ProjectUri%>'
+			Tags	   = @()
+			Extensions = @()
+		}
+	}
 }

@@ -10,12 +10,21 @@ function EnsureGitVersion {
 
 		Write-Debug "Gitversion not installed, installing..."
 
-		$platform = $PSVersionTable.Platform
-		if ($platform -eq 'Unix') {
+		if ($IsLinux) {
+
+			#TODO: RLV - determine how to install/execute gitversion on Linux
+			Exec {
+				Write-Host 'Downloading GitVersion...'
+				wget 'https://github.com/GitTools/GitVersion/releases/download/5.1.3/gitversion-linux-5.1.3.tar.gz'
+				Write-Host 'Unzipping GitVersion...'
+				tar xvzf 'gitversion-linux-5.1.3.tar.gz'
+			}
+
+		} elseif ($IsMacOS) {
 
 			Exec { brew install gitversion }
 
-		} elseif ($platform -like 'Win*') {
+		} elseif ($IsWindows) {
 
 			Exec { choco install gitversion.portable -y }
 

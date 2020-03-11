@@ -16,6 +16,8 @@
 		<parameter name="Version" type="text" prompt="Provide a version for your module" default="0.0.1"/>
 		<parameter name="Author" type="user-fullname" prompt="Provide the name of the author for your module"/>
 		<parameter name="AuthorEmail" type="user-email" prompt="Provide the e-mail address of the author for your module"/>
+		<parameter name="ProjectUri" type="text" prompt="Provide the project URL"/>
+		<parameter name="LicenseUri" type="text" prompt="Provide the URL to the module&apos;s license"/>
 		<parameter name="FunctionFolders" type="multichoice" prompt="Please select folders to include" default="0,1">
 			<choice label="&amp;Public" help="Adds a public folder to module root" value="Public" />
 			<choice label="P&amp;rivate" help="Adds a private folder to module root" value="Private" />
@@ -34,10 +36,6 @@
 		<parameter name="GitVersion" type="choice" prompt="Select whether to utilize GitVersion (or None):" default="1" store="text">
 			<choice label="&amp;No" help="No GitVersion integration" value="$false"/>
 			<choice label="&amp;Yes" help="GitVersion will be included" value="$true"/>
-		</parameter>
-		<parameter name="NugetSupport" type="choice" prompt="Select whether to add Nuget support to your project" default="1" store="text">
-			<choice label="&amp;No" help="No Nuget support" value="$false"/>
-			<choice label="&amp;Yes" help="Nuget support will be included" value="$true"/>
 		</parameter>
 		<parameter name="BuildAutomation" type="choice" prompt="Select a build automation tool (or None):" default="1" store="text">
 			<choice label="&amp;None" help="No build automation tool specified" value="None"/>
@@ -101,14 +99,6 @@
 		<file condition="$PLASTER_PARAM_GitVersion -eq $true"
 			  source="GitVersion.yml"
 			  destination="GitVersion.yml" />
-
-		<message condition="$PLASTER_PARAM_NugetSupport -eq $true">Adding Nuget support to the project...</message>
-		<templateFile condition="$PLASTER_PARAM_NugetSupport -eq $true"
-					  source="Module.nuspec"
-					  destination="source\${PLASTER_PARAM_Name}.nuspec" />
-		<templateFile condition="$PLASTER_PARAM_NugetSupport -eq $true"
-					  source="build\package-functions.ps1"
-					  destination="build\package-functions.ps1" />
 
 		<message condition="$PLASTER_PARAM_BuildAutomation -ne 'None'">Adding $PLASTER_PARAM_BuildAutomation support to the project...</message>
 		<templateFile condition="$PLASTER_PARAM_BuildAutomation -eq 'psake'"

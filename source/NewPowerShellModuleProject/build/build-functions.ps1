@@ -1,34 +1,54 @@
-function Build-Module ([ValidateNotNull()] [hashtable] $BuildContext) {
+<#
+.SUMMARY
+	Builds the PowerShell module and any submodules
+#>
+function Build-Module {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNull()]
+		[hashtable]
+		$BuildContext
+	)
 
 	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Public/*") -Include @("*.ps1", "*.psm1")
 	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
 
-	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.DistributionPath
+	New-Item $BuildContext.ModuleDistributionPath -ItemType Directory
 
-	$publicFuncs | Copy-Item -Destination $BuildContext.DistributionPath
-	$privateFuncs | Copy-Item -Destination $BuildContext.DistributionPath
+	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.ModuleDistributionPath
+
+	$publicFuncs | Copy-Item -Destination $BuildContext.ModuleDistributionPath
+	$privateFuncs | Copy-Item -Destination $BuildContext.ModuleDistributionPath
 
 	Build-ModuleDefinition $BuildContext $publicFuncs $privateFuncs
 
-<% if($PLASTER_PARAM_NugetSupport -eq $true) {
-@"
-	$nuspec = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath '*') -Include '*.nuspec' | Copy-Item -Destination $BuildContext.DistributionPath -PassThru | Get-Item
-
-	(Get-Content -Path $nuspec.FullName -Raw).Replace('{version-replace-me}', $BuildContext.versionInfo.NuGetVersionV2) | Set-Content -Path $nuspec.FullName
-"@
-} %>
 }
 
-function Build-ModuleDefinition ([ValidateNotNull()] [hashtable] $BuildContext, [System.IO.FileInfo[]] $PublicFuncs, [System.IO.FileInfo[]] $PrivateFuncs) {
+<#
+.SUMMARY
+	Creates the module's manifest using the definition data file
+#>
+function Build-ModuleDefinition {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNull()] [hashtable] $BuildContext,
+		[System.IO.FileInfo[]] $PublicFuncs,
+		[System.IO.FileInfo[]] $PrivateFuncs
+	)
 
 	$defPath = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include "*.definition.psd1"
 
-	$definition = Import-PowerShellDataFile -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath $defPath.Name)
+	$definition = Import-PowerShellDataFile -Path $defPath.FullName
 
 	$name = $defPath.Name.Split('.')[0]
+	$path = (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "$name.psd1")
 
-	$definition.Add("Path", (Join-Path -Path $BuildContext.DistributionPath -ChildPath "$name.psd1"))
-	$definition.Add("ModuleVersion", $BuildContext.versionInfo.MajorMinorPatch)
+	$definition.Add("Path", $path)
+	$definition.Add("ModuleVersion", $BuildContext.VersionInfo.MajorMinorPatch)
+
+	if ($BuildContext.versionInfo.NuGetPreReleaseTagV2) {
+		$definition.PrivateData.PSData.Add('Prerelease', $BuildContext.versionInfo.NuGetPreReleaseTagV2)
+	}
 
 	if ($null -ne $PublicFuncs) {
 		$definition.FileList += [string[]]$PublicFuncs.Name
@@ -49,7 +69,16 @@ function Build-ModuleDefinition ([ValidateNotNull()] [hashtable] $BuildContext, 
 	}
 }
 
-function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.FileInfo[]] $PrivateFuncs) {
+#
+.SUMMARY
+	Retrieves nested modules
+#>
+function Get-NestedModules {
+	[CmdletBinding()]
+	param (
+		[System.IO.FileInfo[]] $PublicFuncs,
+		[System.IO.FileInfo[]] $PrivateFuncs
+	)
 
 	[string[]]$BaseNames = $null
 	if ($null -ne $PrivateFuncs) {
@@ -61,4 +90,17 @@ function Get-NestedModules ([System.IO.FileInfo[]] $PublicFuncs, [System.IO.File
 	}
 
 	return $BaseNames
+}
+
+<#
+.SUMMARY
+	Tests if a build is required by checking if key build outputs are present
+#>
+function Test-BuildRequired {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNullOrEmpty()] [string] $Path
+	)
+
+	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include $BuildContext.ModuleName))
 }
