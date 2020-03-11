@@ -27,7 +27,7 @@ Properties {
 
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
-	$ver = GetVersionInfo
+	[hashtable]$ver = [hashtable](GetVersionInfo)
 	$BuildContext.VersionInfo = $ver
 	Write-Host '$ver Type: ' + $ver.GetType()
 	Write-Host '$BuildContext.VersionInfo Type: ' + $BuildContext.VersionInfo.GetType()
