@@ -28,7 +28,8 @@ Properties {
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
 	$PSVersionTable
-	[hashtable]$ver = [hashtable](GetVersionInfo)
+	$ver = GetVersionInfo
+	$ver | Format-Table
 	$BuildContext.VersionInfo = $ver
 	Write-Host '$ver Type: ' + $ver.GetType()
 	Write-Host '$BuildContext.VersionInfo Type: ' + $BuildContext.VersionInfo.GetType()
