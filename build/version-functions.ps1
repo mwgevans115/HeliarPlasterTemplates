@@ -34,7 +34,7 @@ function EnsureGitVersion {
 
 function GetVersionInfo {
 
-	[void]EnsureGitVersion
+	$null = EnsureGitVersion
 	return (Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
 }
 
