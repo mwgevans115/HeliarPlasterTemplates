@@ -3,8 +3,6 @@ trigger:
   branches:
     include:
     - develop
-    - features/*
-    - master
     - releases/*
   paths:
     exclude:
@@ -12,12 +10,24 @@ trigger:
     - docs/*
 
 variables:
-  packagePath: '$(System.DefaultWorkingDirectory)/dist'
+- name: buildExePath
+  value: '$(System.DefaultWorkingDirectory)/build'
+- name: distributionPath
+  value: '$(System.DefaultWorkingDirectory)/dist'
+- name: moduleName
+  value: 'HeliarPlasterTemplates'
+- name: versionNumber
+  value: ''
+- name: isPreRelease
+  value: false
+- name: preReleaseTag
+  value: ''
+- group: DevOps-KeyVault
 
 stages:
 - stage: Build
   jobs:
-  - job: Build
+  - job: Build_PowerShell_Module
     pool:
       vmImage: 'macOS-latest'
     steps:
@@ -28,33 +38,78 @@ stages:
         Import-Module psake
         Invoke-psake ./build/tasks.ps1 -taskList Test
         exit ([int](-not $psake.build_success))
-      displayName: Build Package and Execute Unit Tests
+      displayName: Build Module and Execute Unit Tests
       failOnStderr: true
       name: Build_and_Test
 
     - task: PublishTestResults@2
+      name: Publish_Test_Results
       displayName: Publish Test Results
       inputs:
         testRunTitle: Test Results From Pester
         testRunner: NUnit
         testResultsFiles: Test-Results.xml
         failTaskOnFailedTests: true
-      name: Publish_Test_Results
+
+    - publish: '$(distributionPath)'
+      name: Publish_Build_Artifacts
+      displayName: Publish Built PowerShell Module
+      artifact: '$(moduleName).$(Build.BuildNumber)'
+
+    - publish: '$(buildExePath)'
+      name: Publish_Execution_Source
+      displayName: Publish Build Execution Source
+      artifact: 'build'
 
     - task: ArchiveFiles@2
-      displayName: Archive Built Module
+      name: Archive_Module_for_GitHub_Release
+      displayName: Archive Built PowerShell Module for GitHub Release
+      condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
       inputs:
-        rootFolderOrFile: $(packagePath)
+        rootFolderOrFile: $(distributionPath)
         includeRootFolder: false
         archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(moduleName).$(Build.BuildNumber).zip'
         replaceExistingArchive: true
-      name: Archive_Module
 
-    - task: PublishBuildArtifacts@1
-      displayName: Publish Build Artifacts
+    - task: GitHubRelease@1
+      name: Create_GitHub_Release
+      displayName: Create GitHub Release
+      condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
-      name: Publish_Artifacts
+        gitHubConnection: GitHub Repo Pat
+        repositoryName: rlvandaveer/HeliarPlasterTemplates
+        action: create
+        assets: $(Build.ArtifactStagingDirectory)/*.zip
+        isPreRelease: $(isPreRelease)
+        tag: $(versionNumber)
+        tagSource: userSpecifiedTag
+        target: $(Build.SourceVersion)
+
+- stage: Deploy
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/heads/releases'))
+  jobs:
+  - deployment: Publish_PowerShell_Module
+    environment: PSGallery
+    pool:
+      vmImage: 'macos-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: none
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              path: $(System.DefaultWorkingDirectory)
+          - pwsh: |
+              if ($null -eq (Get-Module -Name psake -listAvailable)) {
+                Install-Module psake -AcceptLicense -Force
+              }
+              Import-Module psake
+              Invoke-psake ./build/tasks.ps1 -taskList Publish
+              exit ([int](-not $psake.build_success))
+            displayName: Publish Module to PSGallery
+            name: Publish_Module_To_PSGallery
+            env:
+              PSGalleryApiKey: $(heliar-publish-powershell-gallery-api-key)
+
