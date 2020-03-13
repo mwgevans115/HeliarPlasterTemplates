@@ -39,6 +39,7 @@ stages:
         Invoke-psake ./build/tasks.ps1 -taskList Test
         exit ([int](-not $psake.build_success))
       displayName: Build Module and Execute Unit Tests
+      failOnStderr: true
       name: Build_and_Test
 
     - task: PublishTestResults@2
@@ -101,9 +102,8 @@ stages:
             inputs:
               path: $(System.DefaultWorkingDirectory)
           - pwsh: |
-              Get-ChildItem
-              Get-ChildItem -Path $(moduleName)* | Rename-Item -NewName 'dist' -Force
-              Get-ChildItem
+              Get-ChildItem -Path $(moduleName)*
+              Get-ChildItem -Path $(moduleName)* | Rename-Item -NewName 'dist'
             displayName: Rename Artifact Folder
             name: Rename_Artifact_Folder
           - pwsh: |
