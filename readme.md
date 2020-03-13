@@ -53,11 +53,45 @@ This project depends on the following modules/applications to manage dependencie
 - /tests - contains unit tests for the Heliar Plaster Templates PowerShell module
 
 ## Templates
-1. **NewPowerShellModuleProject** - this template will create a project with configuration options for building, publishing, testing, and versioning a PowerShell module.
+1. [**NewPowerShellModuleProject**](./source/NewPowerShellModuleProject/readme.md) - this template will create a project with configuration options for building, publishing, testing, and versioning a PowerShell module.
 
 ## Installing and Using the Templates
 
-**TODO**
+```PowerShell
+Install-Module -Name HeliarPlasterTemplates
+```
+
+Once the module has been installed, you should be able to see all of the installed templates by using the following command:
+
+```PowerShell
+Get-PlasterTemplates -IncludeInstalledModules
+```
+
+Which will give output similar to:
+```
+Title        : AddPSScriptAnalyzerSettings
+Author       : Plaster project
+Version      : 1.0.0
+Description  : Add a PowerShell Script Analyzer settings file to the root of your workspace.
+Tags         : {PSScriptAnalyzer, settings}
+TemplatePath : /Users/robb/.local/share/powershell/Modules/Plaster/1.1.3/Templates/AddPSScriptAnalyzerSettings
+
+Title        : New PowerShell Manifest Module
+Author       : Plaster
+Version      : 1.1.0
+Description  : Creates files for a simple, non-shared PowerShell script module.
+Tags         : {Module, ScriptModule, ModuleManifest}
+TemplatePath : /Users/robb/.local/share/powershell/Modules/Plaster/1.1.3/Templates/NewPowerShellScriptModule
+
+Title        : New PowerShell Module Project
+Author       : R. L. Vandaveer
+Version      : 1.0.0
+Description  : Creates the structure for a new PowerShell module project
+Tags         : {PowerShell, module, project}
+TemplatePath : /Users/robb/.local/share/powershell/Modules/HeliarPlasterTemplates/1.0.0/NewPowerShellModuleProject
+```
+
+The templates can be used by `Invoke-Plaster -Template {full path to template} -DesitinationPath {path to destination}`. The following snippet can be helpful to find the full path to the template: `(Get-PlasterTemplate -IncludeInstalledModules | Where-Object Title -eq '{title of the template}').TemplatePath`. *Note that the {} in the preceeding examples denote code that should be replaced and would be excluded from your final code.*
 
 ## Built With
 

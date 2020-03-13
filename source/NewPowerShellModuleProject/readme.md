@@ -23,10 +23,10 @@ Install-Module -HeliarPlasterTemplates -Repository PSGallery
 ```
 2. Create a new module project
 ```PowerShell
-Invoke-Plaster -Template NewPowerShellModuleProject -Destination ~/Code/new-powershell-project
+Invoke-Plaster -Template (Get-PlasterTemplate -IncludeInstalledModules | Where-Object Title -eq 'New PowerShell Module Project').TemplatePath -Destination ~/Code/new-powershell-project
 ```
 
-Instead of filling out all of the prompts manually, you have the optionn of supplying an object to the script at execution time:
+Instead of filling out all of the prompts manually, you have the option of supplying an object to the script at execution time:
 ```PowerShell
 $templateParams = @{
 	templatePath = '.',
