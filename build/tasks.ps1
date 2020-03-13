@@ -38,8 +38,6 @@ Task Build -depends Clean, Init -description 'Creates a ready to distribute modu
 
 }
 
-Task Build-And-Publish -depends Clean, Init, Build, Test -description ''
-
 Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.moduleDistributionPath }
 
 Task Clean -description 'Deletes all build artifacts and the distribution folder' {
@@ -65,7 +63,7 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 
 Task Publish -depends Init -description "Publishes the module and all submodules to the $($BuildContext.PsRepository.Name)" {
 
-	Assert (Test-Path -Path (Join-Path -Path $BuildContext.DistributionPath -ChildPath "*") -Include "*.psd1") -failureMessage "Module not built. Please build before publishing or use the Build-And-Publish task."
+	Assert (Test-Path -Path (Join-Path -Path $BuildContext.DistributionPath -ChildPath "*") -Include "*.psd1") -failureMessage "Module not built. Please build before publishing."
 	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
 
 }

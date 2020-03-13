@@ -32,7 +32,10 @@ Task Build -depends Clean, Init -description 'Creates a ready to distribute modu
 
 	<%
 	if ($PLASTER_PARAM_GitVersion -eq $true) {
-		$BuildContext.VersionInfo = GetVersionInfo
+		$BuildContext.VersionInfo = Get-VersionInfo
+		if ($ENV:BHBuildSystem -eq 'Azure Pipelines') {
+			Write-VersionInfoToAzureDevOps -Version $BuildContext.VersionInfo
+		}
 	}
 	%>
 
@@ -62,10 +65,13 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 
 	Invoke-PSDepend $PSScriptRoot -Force
 
+	Set-BuildEnvironment -Force
 }
 
 ask Publish -depends Init, Check-And-Build, Test -description "Publishes the module and all submodules to the $BuildContext.PsRepository.Name" {
 
+	# Depending on whether you want to automatically build when a build is not detected or stop, you can either remove the Check-And-Build dependency and uncomment below or remove these comments
+	# Assert (Test-Path -Path (Join-Path -Path $BuildContext.DistributionPath -ChildPath "*") -Include "*.psd1") -failureMessage "Module not built. Please build before publishing."
 	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
 
 }

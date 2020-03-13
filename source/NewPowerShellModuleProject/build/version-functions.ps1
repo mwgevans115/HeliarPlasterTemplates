@@ -1,4 +1,4 @@
-function EnsureGitVersion {
+function Initialize-GitVersion {
 
 	try {
 
@@ -32,10 +32,22 @@ function EnsureGitVersion {
 	}
 }
 
-function GetVersionInfo {
+function Get-VersionInfo {
 
-	EnsureGitVersion
-	$ver = Exec { return gitversion } | ConvertFrom-Json -AsHashtable
-	return $ver
+	$null = Initialize-GitVersion
+	return (Exec { return gitversion } | ConvertFrom-Json -AsHashtable)
+}
+
+function Write-VersionInfoToAzureDevOps {
+	[CmdletBinding()]
+	param (
+		[HashTable]
+		$Version
+	)
+
+	Write-Host "##vso[build.updatebuildnumber]$($Version.NuGetVersionV2).$ENV:BUILD_BUILDNUMBER"
+	Write-Host "##vso[task.setvariable variable=versionNumber]$($Version.NuGetVersionV2)"
+	Write-Host "##vso[task.setvariable variable=preReleaseTag]$($Version.NuGetPreReleaseTagV2)"
+	Write-Host "##vso[task.setvariable variable=isPreRelease]$(-not ([String]::IsNullOrWhiteSpace($Version.NuGetPreReleaseTagV2)))"
 
 }
