@@ -64,7 +64,7 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 Task Publish -depends Init -description "Publishes the module and all submodules to the $($BuildContext.PsRepository.Name)" {
 
 	Assert (Test-Path -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "*") -Include "*.psd1") -failureMessage "Module not built. Please build before publishing."
-	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Name -NuGetApiKey $ENV:PSGalleryApiKey
+	Publish-Module -Path $BuildContext.ModuleDistributionPath -Repository $BuildContext.PsRepository.Source -NuGetApiKey $ENV:PSGalleryApiKey
 
 }
 
