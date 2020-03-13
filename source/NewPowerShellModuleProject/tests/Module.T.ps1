@@ -1,4 +1,4 @@
-$ModuleManifestName = '<%=$PLASTER_PARAM_ModuleName%>.psd1'
+$ModuleManifestName = '<%=$PLASTER_PARAM_Name%>.psd1'
 $ModuleManifestPath = "$PSScriptRoot\..\$ModuleManifestName"
 
 Describe 'Module Manifest Tests' {
