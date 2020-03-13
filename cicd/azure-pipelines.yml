@@ -102,6 +102,10 @@ stages:
             inputs:
               path: $(System.DefaultWorkingDirectory)
           - pwsh: |
+              Get-ChildItem -Path $(moduleName)* | Rename-Item -NewName 'dist'
+            displayName: Rename Artifact Folder
+            name: Rename_Artifact_Folder
+          - pwsh: |
               if ($null -eq (Get-Module -Name psake -listAvailable)) {
                 Install-Module psake -AcceptLicense -Force
               }
