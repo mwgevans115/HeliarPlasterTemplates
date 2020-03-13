@@ -102,7 +102,6 @@ stages:
             inputs:
               path: $(System.DefaultWorkingDirectory)
           - pwsh: |
-              Get-ChildItem -Path $(moduleName)*
               Get-ChildItem -Path $(moduleName)* | Rename-Item -NewName 'dist'
             displayName: Rename Artifact Folder
             name: Rename_Artifact_Folder
