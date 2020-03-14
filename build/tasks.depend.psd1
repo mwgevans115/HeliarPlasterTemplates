@@ -8,4 +8,5 @@
 	}
 	BuildHelpers = 'latest'
 	Pester = 'latest'
+	Plaster = 'latest'
 }
