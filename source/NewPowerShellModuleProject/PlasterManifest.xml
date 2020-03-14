@@ -4,7 +4,7 @@
 	<metadata>
 		<name>NewPowerShellModuleProject</name>
 		<id>c6774698-7e41-4205-83c0-ce7df52da9a8</id>
-		<version>0.0.1</version>
+		<version>0.0.0</version>
 		<title>New PowerShell Module Project</title>
 		<description>Creates the structure for a new PowerShell module project</description>
 		<author>R. L. Vandaveer</author>

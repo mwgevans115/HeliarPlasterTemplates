@@ -35,10 +35,11 @@ Task Build -depends Clean, Init -description 'Creates a ready to distribute modu
 	New-Item $BuildContext.DistributionPath -ItemType Directory
 
 	Build-Module -BuildContext $BuildContext
+	Sync-ModuleAndTemplateVersions -BuildContext $BuildContext
 
 }
 
-Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.ModuleDistributionPath }
+Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -BuildContext $BuildContext }
 
 Task Clean -description 'Deletes all build artifacts and the distribution folder' {
 

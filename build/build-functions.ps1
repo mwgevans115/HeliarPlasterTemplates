@@ -101,8 +101,25 @@ function Get-NestedModules {
 function Test-BuildRequired {
 	[CmdletBinding()]
 	param (
-		[ValidateNotNullOrEmpty()] [string] $Path
+		[ValidateNotNullOrEmpty()] [hashtable] $BuildContext
 	)
 
-	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include $BuildContext.ModuleName))
+	return (-not (Test-Path -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "$($BuildContext.ModuleName).psd1")))
+}
+
+function Sync-ModuleAndTemplateVersions {
+	[CmdletBinding()]
+	param (
+		[ValidateNotNull()] [hashtable] $BuildContext
+	)
+
+	$manifests = Get-ChildItem -Path $BuildContext.DistributionPath -Filter PlasterManifest.xml -Recurse
+
+	foreach ($manifest in $manifests) {
+		[xml]$xml = [xml](Get-Content -Path $manifest)
+		$verElement = $xml.GetElementsByTagName('version') | Select-Object -First 1
+		$verElement.InnerText = $BuildContext.VersionInfo.MajorMinorPatch
+		$xml.Save($manifest)
+	}
+
 }
