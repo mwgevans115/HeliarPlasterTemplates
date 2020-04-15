@@ -27,7 +27,6 @@ Properties {
 
 Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
 
-	$BuildContext.VersionInfo = Get-VersionInfo
 	if ($ENV:BHBuildSystem -eq 'Azure Pipelines') {
 		Write-VersionInfoToAzureDevOps -Version $BuildContext.VersionInfo
 	}
@@ -60,6 +59,7 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 	Invoke-PSDepend $PSScriptRoot -Force
 
 	Set-BuildEnvironment -Force
+	$BuildContext.VersionInfo = Get-VersionInfo
 }
 
 Task Publish -depends Init -description "Publishes the module and all submodules to the $($BuildContext.PsRepository.Name)" {

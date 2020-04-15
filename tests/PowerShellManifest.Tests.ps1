@@ -4,7 +4,7 @@ param(
 )
 $manifest = Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "HeliarPlasterTemplates.psd1"
 
-Describe 'Testing Module Manifest' {
+Describe 'Module Manifest Tests' {
 
 	It 'The module has a valid module manifest file' {
 		Test-ModuleManifest -Path $manifest

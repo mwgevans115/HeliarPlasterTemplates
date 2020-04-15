@@ -30,12 +30,12 @@
 			<choice label="Visual Studio &amp;Code" help="Your editor is Visual Studio Code" value="VSCode"/>
 		</parameter>
 		<parameter name="CreateRepo" type="choice" prompt="Select whether to initialize a Git repo for your project:" default="1" store="text">
-			<choice label="&amp;No" help="No Git repository will be created" value="$false" />
-			<choice label="&amp;Yes" help="A Git repository will be created" value="$true" />
+			<choice label="&amp;No" help="No Git repository will be created" value="False" />
+			<choice label="&amp;Yes" help="A Git repository will be created" value="True" />
 		</parameter>
 		<parameter name="GitVersion" type="choice" prompt="Select whether to utilize GitVersion (or None):" default="1" store="text">
-			<choice label="&amp;No" help="No GitVersion integration" value="$false"/>
-			<choice label="&amp;Yes" help="GitVersion will be included" value="$true"/>
+			<choice label="&amp;No" help="No GitVersion integration" value="False"/>
+			<choice label="&amp;Yes" help="GitVersion will be included" value="True"/>
 		</parameter>
 		<parameter name="BuildAutomation" type="choice" prompt="Select a build automation tool (or None):" default="1" store="text">
 			<choice label="&amp;None" help="No build automation tool specified" value="None"/>
