@@ -69,7 +69,7 @@ function Build-ModuleDefinition {
 	}
 }
 
-#
+<#
 .SUMMARY
 	Retrieves nested modules
 #>
