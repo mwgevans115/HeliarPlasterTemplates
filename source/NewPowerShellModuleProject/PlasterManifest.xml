@@ -67,9 +67,9 @@
 
 		<message condition="$PLASTER_PARAM_BuildAutomation -eq 'None'">Creating default module manifest...</message>
 		<newModuleManifest condition="$PLASTER_PARAM_BuildAutomation -eq 'None'"
-						   destination='${PLASTER_PARAM_Name}.psd1'
+						   destination='source\${PLASTER_PARAM_Name}.psd1'
 						   moduleVersion='$PLASTER_PARAM_Version'
-						   rootModule='${PLASTER_PARAM_Name}.psm1'
+						   rootModule='source\${PLASTER_PARAM_Name}.psm1'
 						   encoding='UTF8-NoBOM'
 						   openInEditor="true"/>
 
