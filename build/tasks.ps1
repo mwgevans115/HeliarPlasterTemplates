@@ -25,7 +25,7 @@ Properties {
 	}
 }
 
-Task Build -depends Clean, Init -description 'Creates a ready to distribute module with all required files' {
+Task Build -depends Clean, Init, Pre-Build -description 'Creates a ready to distribute module with all required files' {
 
 	if ($ENV:BHBuildSystem -eq 'Azure Pipelines') {
 		Write-VersionInfoToAzureDevOps -Version $BuildContext.VersionInfo
@@ -59,6 +59,9 @@ Task Init -description 'Initializes the build chain by installing dependencies' 
 	Invoke-PSDepend $PSScriptRoot -Force
 
 	Set-BuildEnvironment -Force
+}
+
+Task Pre-Build -depends Init -description 'Establishes version information for build and tests' {
 	$BuildContext.VersionInfo = Get-VersionInfo
 }
 
@@ -69,7 +72,7 @@ Task Publish -depends Init -description "Publishes the module and all submodules
 
 }
 
-Task Test -depends Init, Check-And-Build -description 'Executes all unit tests' {
+Task Test -depends Init, Pre-Build, Check-And-Build -description 'Executes all unit tests' {
 
 	Invoke-Pester -Script @{ Path = $BuildContext.TestPath; Parameters = @{ BuildContext = $BuildContext } }  -OutputFile (Join-Path -Path $BuildContext.RootPath -ChildPath 'Test-Results.xml') -OutputFormat NUnitXml
 
