@@ -1,6 +1,7 @@
 # Defines all of the psake tasks used to build, test, and publish this project
 
 Include build-functions.ps1
+<%
 if ($PLASTER_PARAM_GitVersion -eq $true) {
 "Include version-functions.ps1"
 }
