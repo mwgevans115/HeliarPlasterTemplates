@@ -46,7 +46,7 @@ Task Build -depends Clean, Init -description 'Creates a ready to distribute modu
 
 }
 
-Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -Path $BuildContext.moduleDistributionPath }
+Task Check-And-Build -depends Build -description 'Conditionally executes a build if no build output is found' -precondition { return Test-BuildRequired -BuildContext $BuildContext }
 
 Task Clean -description 'Deletes all build artifacts and the distribution folder' {
 
@@ -79,20 +79,20 @@ Task Publish -depends Init, Check-And-Build, Test -description "Publishes the mo
 
 <%
 if ($PLASTER_PARAM_TestFramework -ne 'None') {
-@"
-Task Test -depends Init, Build -description 'Executes all unit tests' {
+@'
+Task Test -depends Init, Check-And-Build -description 'Executes all unit tests' {
 
-"@
+'@
 }
 if ($PLASTER_PARAM_TestFramework -eq 'Pester') {
-@"
+@'
 	Invoke-Pester -Script $BuildContext.testPath -OutputFile "$($BuildContext.rootPath)\Test-Results.xml" -OutputFormat NUnitXml
-"@
+'@
 }
 if ($PLASTER_PARAM_TestFramework -ne 'None') {
-@"
+@'
 
 }
-"@
+'@
 }
 %>

@@ -99,8 +99,8 @@ function Get-NestedModules {
 function Test-BuildRequired {
 	[CmdletBinding()]
 	param (
-		[ValidateNotNullOrEmpty()] [string] $Path
+		[ValidateNotNullOrEmpty()] [hashtable] $BuildContext
 	)
 
-	return (-not (Test-Path -Path (Join-Path -Path $Path -ChildPath "*") -Include $BuildContext.ModuleName))
+	return (-not (Test-Path -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "$($BuildContext.ModuleName).psd1")))
 }
