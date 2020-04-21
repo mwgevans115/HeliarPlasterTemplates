@@ -45,7 +45,7 @@ function Write-VersionInfoToAzureDevOps {
 		$Version
 	)
 
-	Write-Host "##vso[build.updatebuildnumber]$($Version.NuGetVersionV2):$ENV:BUILD_BUILDNUMBER"
+	Write-Host "##vso[build.updatebuildnumber]$($Version.NuGetVersionV2)_$ENV:BUILD_BUILDNUMBER"
 	Write-Host "##vso[task.setvariable variable=versionNumber]$($Version.NuGetVersionV2)"
 	Write-Host "##vso[task.setvariable variable=preReleaseTag]$($Version.NuGetPreReleaseTagV2)"
 	Write-Host "##vso[task.setvariable variable=isPreRelease]$(-not ([String]::IsNullOrWhiteSpace($Version.NuGetPreReleaseTagV2)))"
