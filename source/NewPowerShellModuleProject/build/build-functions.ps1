@@ -10,16 +10,15 @@ function Build-Module {
 		$BuildContext
 	)
 
-	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Public/*") -Include @("*.ps1", "*.psm1")
-	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
-
 	New-Item $BuildContext.ModuleDistributionPath -ItemType Directory
 
 	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.ModuleDistributionPath
 
-	$publicFuncs | Copy-Item -Destination $BuildContext.ModuleDistributionPath
-	$privateFuncs | Copy-Item -Destination $BuildContext.ModuleDistributionPath
+	Copy-Item -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Public") -Destination $BuildContext.ModuleDistributionPath -Recurse -Force
+	Copy-Item -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private") -Destination $BuildContext.ModuleDistributionPath -Recurse -Force -ErrorAction Ignore
 
+	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "Public") -Include @("*.ps1", "*.psm1") -Recurse
+	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "Private") -Include @("*.ps1", "*.psm1") -Recurse -ErrorAction Ignore
 	Build-ModuleDefinition $BuildContext $publicFuncs $privateFuncs
 
 }
@@ -50,16 +49,20 @@ function Build-ModuleDefinition {
 		$definition.PrivateData.PSData.Add('Prerelease', $BuildContext.versionInfo.NuGetPreReleaseTagV2)
 	}
 
+	Push-Location -Path $BuildContext.ModuleDistributionPath
+
 	if ($null -ne $PublicFuncs) {
-		$definition.FileList += [string[]]$PublicFuncs.Name
+		$definition.FileList += ($PublicFuncs | Resolve-Path -Relative)
 		$definition.FunctionsToExport += $PublicFuncs.BaseName
 	}
 	if ($null -ne $PrivateFuncs) {
-		$definition.FileList += [string[]]$PrivateFuncs.Name
+		$definition.FileList += ($PrivateFuncs | Resolve-Path -Relative)
 	}
 	if (($null -ne $PublicFuncs) -or ($null -ne $PrivateFuncs)) {
 		$definition.NestedModules += Get-NestedModules $PublicFuncs $PrivateFuncs
 	}
+
+	Pop-Location
 
 	New-ModuleManifest @definition
 
@@ -82,11 +85,11 @@ function Get-NestedModules {
 
 	[string[]]$BaseNames = $null
 	if ($null -ne $PrivateFuncs) {
-		 $BaseNames += $PrivateFuncs.Name
+		 $BaseNames += ($PrivateFuncs | Resolve-Path -Relative)
 	}
 
 	if ($null -ne $PublicFuncs) {
-		$BaseNames += $PublicFuncs.Name
+		$BaseNames += ($PublicFuncs | Resolve-Path -Relative)
 	}
 
 	return $BaseNames

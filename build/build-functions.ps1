@@ -10,20 +10,18 @@ function Build-Module {
 		$BuildContext
 	)
 
-	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Public/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
-	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "Private/*") -Include @("*.ps1", "*.psm1") -ErrorAction Ignore
-	$templates = Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Directory
-
 	New-Item $BuildContext.ModuleDistributionPath -ItemType Directory
 
-	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.ps1", "*.psm1") -Exclude "*.definition.psd1" | Copy-Item -Destination $BuildContext.ModuleDistributionPath
+	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath '*') -Include @('*.ps1', '*.psm1') -Exclude '*.definition.psd1' | Copy-Item -Destination $BuildContext.ModuleDistributionPath
 
-	Get-ChildItem -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath "*") -Include @("*.md") | Copy-Item -Destination $BuildContext.ModuleDistributionPath
-
+	Copy-Item -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath 'Public') -Destination $BuildContext.ModuleDistributionPath -Recurse -Force -ErrorAction Ignore
+	Copy-Item -Path (Join-Path -Path $BuildContext.SourcePath -ChildPath 'Private') -Destination $BuildContext.ModuleDistributionPath -Recurse -Force -ErrorAction Ignore
+	$templates = Get-ChildItem -Path $BuildContext.SourcePath -Directory -Exclude 'Private', 'Public'
 	$templates | Copy-Item -Recurse -Destination $BuildContext.ModuleDistributionPath
 
+	$publicFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "Public") -Include @("*.ps1", "*.psm1") -Recurse -ErrorAction Ignore
+	$privateFuncs = Get-ChildItem -Path (Join-Path -Path $BuildContext.ModuleDistributionPath -ChildPath "Private") -Include @("*.ps1", "*.psm1") -Recurse -ErrorAction Ignore
 	Build-ModuleDefinition $BuildContext $publicFuncs $privateFuncs
-
 }
 
 <#
