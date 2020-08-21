@@ -50,13 +50,16 @@ Task default -depends Test
 
 Task Init -description 'Initializes the build chain by installing dependencies' {
 
-	$psd = Get-Module PSDepend -listAvailable
-	if ($null -eq $psd) {
-	  Install-Module PSDepend -AcceptLicense -Force
-	}
-	Import-Module PSDepend
+	if ($null -eq (Get-Module PSDepend -listAvailable)) {
+		Install-Module PSDepend -Repository PSGallery -AcceptLicense -Force
+	  }
+	  Import-Module PSDepend
 
-	Invoke-PSDepend $PSScriptRoot -Force
+	  if (!(Invoke-PSDepend $PSScriptRoot -Test -Quiet)) {
+		  Invoke-PSDepend $PSScriptRoot -Install -Force
+	  }
+
+	Invoke-PSDepend $PSScriptRoot -Import -Force
 
 	Set-BuildEnvironment -Force
 }
