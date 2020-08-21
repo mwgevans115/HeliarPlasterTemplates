@@ -32,6 +32,13 @@ stages:
       vmImage: 'macOS-latest'
     steps:
     - pwsh: |
+            # Overcome recent MacOS mono symlink problem
+            brew install gitversion
+            brew link --overwrite mono
+      displayName: Install GitVersion
+      name: Install_GitVersion
+      failOnStderr: false
+    - pwsh: |
         if ($null -eq (Get-Module -Name psake -listAvailable)) {
           Install-Module psake -AcceptLicense -Force
         }
