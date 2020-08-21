@@ -58,6 +58,7 @@
 		<file destination="cicd/" source="" />
 		<file destination="docs/" source="" />
 		<file destination="source/" source="" />
+		<file destination="source/Startup" source="" />
 		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Public'" destination="source/Public/" source="" />
 		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Private'" destination="source/Private/" source="" />
 		<file condition="$PLASTER_PARAM_FunctionFolders -contains 'Classes'" destination="source/Classes/" source="" />

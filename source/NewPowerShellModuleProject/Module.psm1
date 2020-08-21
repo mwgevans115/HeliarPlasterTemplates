@@ -1,7 +1,11 @@
 # Implement your module commands in this script.
 
+# Invoke any startup scripts
+if (Test-Path -Path "$PSScriptRoot\Startup" -ErrorAction Ignore)
+{
+    Get-ChildItem "$PSScriptRoot\Startup" -ErrorAction Stop | ForEach-Object {
+        . $_.FullName
+    }
+}
 
-# Export only the functions using PowerShell standard verb-noun naming.
-# Be sure to list each exported functions in the FunctionsToExport field of the module manifest file.
-# This improves performance of command discovery in PowerShell.
-# Export-ModuleMember -Function *-*
+# Import modules and any other setup or steps here
