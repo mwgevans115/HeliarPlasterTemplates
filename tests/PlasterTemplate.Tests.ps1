@@ -33,7 +33,7 @@ Describe 'Plaster Template Tests' {
 				Description = 'Test'
 				DestinationPath = (Join-Path -Path 'TestDrive:' -ChildPath $templateDir.Name)
 				Editor = 'None'
-				FunctionFolders = 'Public' , 'Private'
+				FunctionFolders = 'Public', 'Private', 'Classes'
 				GitVersion = 'False'
 				LicenseUri = 'https://test.mctester.test/license'
 				Name = 'TestProject'
@@ -55,6 +55,22 @@ Describe 'Plaster Template Tests' {
 
 			It 'Creates basic module manifest file' {
 				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath "$($plasterParams.Name).psd1") | Should -Exist
+			}
+
+			It 'Creates source directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath 'source' | Should -Exist
+			}
+
+			It 'Creates Private directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath 'Private') | Should -Exist
+			}
+
+			It 'Creates Public directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath 'Public') | Should -Exist
+			}
+
+			It 'Creates Classes directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath 'Classes') | Should -Exist
 			}
 
 			It 'Creates finishing script file' {
@@ -159,6 +175,18 @@ Describe 'Plaster Template Tests' {
 
 			It 'Creates VSCode directory' {
 				Join-Path -Path $plasterParams.DestinationPath -ChildPath '.vscode' | Should -Exist
+			}
+
+			It 'Creates source directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath 'source' | Should -Exist
+			}
+
+			It 'Creates Private directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath 'Private') | Should -Exist
+			}
+
+			It 'Creates Public directory' {
+				Join-Path -Path $plasterParams.DestinationPath -ChildPath (Join-Path -Path 'source' -ChildPath 'Public') | Should -Exist
 			}
 
 			It 'Creates finishing script file' {
