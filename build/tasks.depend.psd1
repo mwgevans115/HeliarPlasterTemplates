@@ -7,6 +7,6 @@
 		}
 	}
 	BuildHelpers = 'latest'
-	Pester = 'latest'
+	Pester = '4.10.1'
 	Plaster = 'latest'
 }
