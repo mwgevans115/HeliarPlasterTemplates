@@ -45,12 +45,12 @@ This project depends on the following modules/applications to manage dependencie
 * [PSDeploy](https://github.com/RamblingCookieMonster/PSDeploy)
 
 ## Structure
-- /build - contains the code for destributing the templates contained in the project
-- /cicd - contains continuous integration-continuous delivery code
-- /docs - contains documentation for using and maintaining the Heliar Plaster Templates project
-- /dist - created automatically when a build is executed. Contains everything needed to distribute the PowerShell module.
-- /source - contains the source code for each template
-- /tests - contains unit tests for the Heliar Plaster Templates PowerShell module
+- `/build` - contains the code for distributing the templates contained in the project
+- `/cicd` - contains continuous integration-continuous delivery code
+- `/docs` - contains documentation for using and maintaining the Heliar Plaster Templates project
+- `/dist` - created automatically when a build is executed. Contains everything needed to distribute the PowerShell module.
+- `/source` - contains the source code for each template
+- `/tests` - contains unit tests for the Heliar Plaster Templates PowerShell module
 
 ## Templates
 1. [**NewPowerShellModuleProject**](./source/NewPowerShellModuleProject/readme.md) - this template will create a project with configuration options for building, publishing, testing, and versioning a PowerShell module.
